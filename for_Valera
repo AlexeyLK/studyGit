@@ -1,0 +1,82 @@
+#include<iostream>
+#include<algorithm>
+#include<string>
+#include<ctime>
+#include<map>
+#include<set>
+#include<cstdio>
+using namespace std;
+map<char, int> mp;
+map<int, string> ans;
+map<string, char> rev;
+int i, j, ss, ff;
+multiset<pair <int, int> > st;
+pair<int, pair <int,int> > t[300];
+char c;
+string s, extra, wow;
+
+void get(int pos, string res){
+    if(t[pos].second.first!=-1){
+        get(t[pos].second.first, res + '0');
+        get(t[pos].second.second, res + '1');
+    }
+    else {ans[pos] = res; rev[res] = pos;}
+}
+
+void main(){
+
+    freopen("Harry Potter.txt", "r", stdin);
+    freopen("aaaaa.txt", "w", stdout);
+    while(getline(cin, extra)) s += extra + "\n";
+    for (i = 0; i<s.size(); ++i)
+        if (mp.find(s[i])== mp.end()) mp[s[i]] = 1;
+        else mp[s[i]]++;
+
+    for (int c = 0; c<=127; ++c){
+        if (mp.find(char(c)) == mp.end()) mp[char(c)] = 0;
+        t[c].first = mp[char(c)];
+        t[c].second.first = -1;
+        t[c].second.second = -1;
+        if (mp[c]!=0) st.insert({mp[char(c)], c});
+    }
+    i = 128;
+    while(st.size()>1){
+        ff = st.begin()->first;
+        t[i].second.first = st.begin()->second;
+        st.erase(st.begin());
+        ss = st.begin()->first;
+        t[i].first = ff + ss;
+        t[i].second.second = st.begin()->second;
+        st.erase(st.begin());
+        st.insert({ff + ss, i});
+        ++i;
+    }
+    get(i - 1, "");
+    for (i = 0; i<s.size(); ++i) wow += ans[int(s[i])];
+
+/*    for (i = 0; i<=127; ++i){
+        if (ans.find(i)==ans.end())cout << i<<" #"<<"\n";
+        else cout << i<<" "<< ans[i]<<"\n";
+    }*/
+    int h = wow.size();
+    string res = "";
+    for(i = 7; i<h; i+=8){
+        int o= 0, tw = 1;
+        for(j = i; j>i-8; --j){
+            o += (int(wow[j])-48)*tw;
+            tw*=2;
+        }
+        res+=char(o);
+    }
+    cout << res;
+
+
+    freopen("text.txt", "w", stdout);
+    int ln = wow.size();
+    string cur= "";
+    for(i = 0; i < ln; ++i){
+        cur += wow[i];
+        if (rev.find(cur) !=rev.end()){cout << rev[cur]; cur ="";}
+    }
+
+}
